@@ -1,0 +1,20 @@
+{
+  "name": "marine-garbage-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "近海漂浮垃圾自动监测与溯源分析系统 - 前端",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "leaflet": "^1.9.4",
+    "vue": "^3.4.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.0",
+    "vite": "^6.4.5"
+  }
+}

@@ -1,0 +1,8 @@
+# 后端依赖（安装：pip install -r requirements.txt）
+fastapi>=0.110
+uvicorn[standard]>=0.29
+python-multipart>=0.0.9
+pydantic>=2.5
+numpy
+# YOLO 推理（复用训练环境已装的 torch + ultralytics）
+ultralytics>=8.4.0
