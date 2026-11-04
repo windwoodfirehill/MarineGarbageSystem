@@ -1,25 +1,33 @@
-# Python
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.venv/
-venv/
-
-# Frontend
+# Dependencies and build outputs
 node_modules/
 dist/
-
-# Local configuration and editor files
+target/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+# Local settings and credentials
 .env
 .env.*
 !.env.example
+**/application-local.properties
 .idea/
 .vscode/
-
-# OS files
+# Models, flow fields and runtime files
+models/
+data/
+static/
+*.pt
+*.onnx
+*.nc
+*.nc4
+*.ascii
+*.log
+# Reference material is kept locally only
+0[1-5]_*/
+*.md
+*.doc
+*.docx
+*.pdf
 .DS_Store
 Thumbs.db
-
-# Runtime output
-03_系统框架/MarineGarbageSystem/backend/static/results/*
-!03_系统框架/MarineGarbageSystem/backend/static/results/.gitkeep

@@ -1,0 +1,10 @@
+api: true
+apiAddress: 127.0.0.1:9997
+rtmp: true
+rtmpAddress: :1935
+rtsp: true
+rtspAddress: :8554
+hls: true
+hlsAddress: :8888
+paths:
+  all_others:

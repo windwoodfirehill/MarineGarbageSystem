@@ -1,0 +1,26 @@
+package cn.marinegarbage;
+import java.util.*;
+import org.springframework.stereotype.Repository;
+import org.springframework.jdbc.core.JdbcTemplate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+@Repository
+public class MonitoringRepository {
+ private final JdbcTemplate db; private final ObjectMapper json;
+ public MonitoringRepository(JdbcTemplate db,ObjectMapper json){this.db=db;this.json=json;}
+ public String encode(Object value){try{return json.writeValueAsString(value);}catch(Exception e){throw new IllegalArgumentException("Invalid JSON",e);}}
+ private Map<String,Object> decode(Map<String,Object> row){ for(String key:List.of("metadata","observation_area","result","parameters")){Object value=row.get(key);if(value!=null)try{row.put(key,json.readValue(value.toString(),Object.class));}catch(Exception e){throw new IllegalStateException(e);}} return row; }
+ public List<Map<String,Object>> candidateSources(){return db.queryForList("SELECT * FROM pollution_source ORDER BY source_type,name").stream().map(this::decode).toList();}
+ public void addSource(Map<String,Object> s){db.update("INSERT INTO pollution_source(id,name,source_type,longitude,latitude,evidence,metadata) VALUES(?,?,?,?,?,?,?)",UUID.randomUUID().toString(),s.get("name"),s.get("source_type"),s.get("longitude"),s.get("latitude"),s.get("evidence"),encode(s.get("metadata")));}
+ public void updateSourceStatus(String id,String status,String evidence){int changed=db.update("UPDATE pollution_source SET metadata=JSON_SET(metadata,'$.status',?,'$.status_basis',?),evidence=? WHERE id=?",status,evidence,evidence,id);if(changed==0)throw new ResponseStatusException(HttpStatus.NOT_FOUND,"点位不存在");}
+ public List<Map<String,Object>> list(){return db.queryForList("SELECT m.*, (SELECT COUNT(*) FROM detection_record d WHERE d.monitoring_id=m.id) AS frame_count, (SELECT JSON_UNQUOTE(JSON_EXTRACT(d.result,'$.num_detections')) FROM detection_record d WHERE d.monitoring_id=m.id ORDER BY d.created_at DESC LIMIT 1) AS last_count, (SELECT COALESCE(JSON_UNQUOTE(JSON_EXTRACT(t.result,'$.conclusion')),JSON_UNQUOTE(JSON_EXTRACT(t.result,'$.reason'))) FROM trace_record t WHERE t.monitoring_id=m.id ORDER BY t.created_at DESC LIMIT 1) AS last_conclusion, (SELECT t.status FROM trace_record t WHERE t.monitoring_id=m.id ORDER BY t.created_at DESC LIMIT 1) AS last_status FROM monitoring_record m ORDER BY m.created_at DESC LIMIT 200").stream().map(this::decode).toList();}
+ public Map<String,Object> get(String id){var rows=db.queryForList("SELECT * FROM monitoring_record WHERE id=?",id);if(rows.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND,"监控记录不存在");return decode(rows.get(0));}
+ public String create(String title,String type,String path){String id=UUID.randomUUID().toString();db.update("INSERT INTO monitoring_record(id,title,media_type,media_path,metadata) VALUES(?,?,?,?,?)",id,title,type,path,"{}");return id;}
+ public void update(String id,Map<String,Object> body){get(id);if(!db.queryForList("SELECT id FROM live_session WHERE monitoring_id=? AND state='RUNNING'",id).isEmpty())throw new IllegalArgumentException("请先停止当前监控，再修改地点和时间");db.update("UPDATE monitoring_record SET title=?, captured_at=?, observation_area=?, metadata=? WHERE id=?",body.get("title"),body.get("captured_at"),body.get("observation_area")==null?null:encode(body.get("observation_area")),encode(body.getOrDefault("metadata",Map.of())),id);}
+ public Map<String,Object> detection(String id,String model,double seconds,String path,Object result){String key=UUID.randomUUID().toString();db.update("INSERT INTO detection_record(id,monitoring_id,model,frame_seconds,image_path,result) VALUES(?,?,?,?,?,?)",key,id,model,seconds,path,encode(result));return Map.of("id",key,"monitoring_id",id,"frame_seconds",seconds,"image","/api/media/frames/"+java.nio.file.Path.of(path).getFileName(),"detection",result);}
+ public List<Map<String,Object>> detections(String id){get(id);return db.queryForList("SELECT * FROM detection_record WHERE monitoring_id=? ORDER BY created_at DESC LIMIT 200",id).stream().map(this::decode).toList();}
+ public List<Map<String,Object>> traces(String id){get(id);return db.queryForList("SELECT * FROM trace_record WHERE monitoring_id=? ORDER BY created_at DESC LIMIT 20",id).stream().map(this::decode).toList();}
+ public Map<String,Object> saveTrace(String id,String type,String status,Map<String,Object> parameters,Object result){String key=UUID.randomUUID().toString();db.update("INSERT INTO trace_record(id,monitoring_id,garbage_type,status,parameters,result) VALUES(?,?,?,?,?,?)",key,id,type,status,encode(parameters),encode(result));return Map.of("id",key,"status",status,"result",result);}
+ public Map<String,Object> blockedTrace(String id,String type,Map<String,Object> parameters){get(id);String key=UUID.randomUUID().toString();var result=Map.of("reason","尚未导入并验证该观测区域和时段的真实流场，暂停溯源计算","data_source","Copernicus / FVCOM 待验证");db.update("INSERT INTO trace_record(id,monitoring_id,garbage_type,status,parameters,result) VALUES(?,?,?,?,?,?)",key,id,type,"WAITING_FOR_DATA",encode(parameters),encode(result));return Map.of("id",key,"status","WAITING_FOR_DATA","result",result);}
+}

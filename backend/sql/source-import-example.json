@@ -1,0 +1,74 @@
+[
+  {
+    "name": "测试排放口 01",
+    "source_type": "河口",
+    "longitude": 122.05,
+    "latitude": 31.08,
+    "is_test": true,
+    "coordinate_datum": "WGS84 合成点",
+    "evidence": "仅用于流程测试，坐标人为设置，不代表真实排放设施"
+  },
+  {
+    "name": "测试排放口 02",
+    "source_type": "港口",
+    "longitude": 122.1,
+    "latitude": 31.1,
+    "is_test": true,
+    "coordinate_datum": "WGS84 合成点",
+    "evidence": "仅用于流程测试，坐标人为设置，不代表真实排放设施"
+  },
+  {
+    "name": "测试排放口 03",
+    "source_type": "养殖区",
+    "longitude": 122.15,
+    "latitude": 31.12,
+    "is_test": true,
+    "coordinate_datum": "WGS84 合成点",
+    "evidence": "仅用于流程测试，坐标人为设置，不代表真实排放设施"
+  },
+  {
+    "name": "测试排放口 04",
+    "source_type": "排水口",
+    "longitude": 122.0,
+    "latitude": 31.0,
+    "is_test": true,
+    "coordinate_datum": "WGS84 合成点",
+    "evidence": "仅用于流程测试，坐标人为设置，不代表真实排放设施"
+  },
+  {
+    "name": "测试排放口 05",
+    "source_type": "河口",
+    "longitude": 121.95,
+    "latitude": 30.95,
+    "is_test": true,
+    "coordinate_datum": "WGS84 合成点",
+    "evidence": "仅用于流程测试，坐标人为设置，不代表真实排放设施"
+  },
+  {
+    "name": "测试排放口 06",
+    "source_type": "港口",
+    "longitude": 122.2,
+    "latitude": 31.2,
+    "is_test": true,
+    "coordinate_datum": "WGS84 合成点",
+    "evidence": "仅用于流程测试，坐标人为设置，不代表真实排放设施"
+  },
+  {
+    "name": "测试排放口 07",
+    "source_type": "养殖区",
+    "longitude": 121.9,
+    "latitude": 30.9,
+    "is_test": true,
+    "coordinate_datum": "WGS84 合成点",
+    "evidence": "仅用于流程测试，坐标人为设置，不代表真实排放设施"
+  },
+  {
+    "name": "测试排放口 08",
+    "source_type": "排水口",
+    "longitude": 122.25,
+    "latitude": 31.05,
+    "is_test": true,
+    "coordinate_datum": "WGS84 合成点",
+    "evidence": "仅用于流程测试，坐标人为设置，不代表真实排放设施"
+  }
+]
