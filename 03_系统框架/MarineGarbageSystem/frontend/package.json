@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "leaflet": "^1.9.4",
-    "vue": "^3.4.0"
+    "vue": "^3.4.0",
+    "vuetify": "^4.3.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",

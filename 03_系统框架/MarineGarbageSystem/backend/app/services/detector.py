@@ -2,6 +2,7 @@
 """YOLO 识别服务：加载多模型，支持切换模型/阈值推理"""
 import os
 from ultralytics import YOLO
+import torch
 from .. import config
 
 # 模型缓存（懒加载，避免启动即占显存）
@@ -31,7 +32,7 @@ def detect(image_path, model_key=None, conf=0.25, iou=0.45, max_det=300):
     model = _get_model(key)
     results = model.predict(
         source=image_path, conf=conf, iou=iou,
-        max_det=max_det, verbose=False, device=0,
+        max_det=max_det, verbose=False, device=0 if torch.cuda.is_available() else "cpu",
     )
     r = results[0]
     boxes = r.boxes
